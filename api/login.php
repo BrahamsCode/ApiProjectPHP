@@ -1,5 +1,5 @@
 <?php
-require_once '../config.php';
+require_once __DIR__ . '/../config.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -27,24 +27,24 @@ $password = $data['password'];
 
 try {
     $conn = getConnection();
-    
+
     // Buscar usuario
     $stmt = $conn->prepare("SELECT id, username, password, email FROM usuarios WHERE username = ?");
     $stmt->execute([$username]);
     $usuario = $stmt->fetch();
-    
+
     // Verificar usuario y contraseña
     if ($usuario && password_verify($password, $usuario['password'])) {
-        
+
         // Iniciar sesión
         iniciarSesion();
         $_SESSION['usuario_id'] = $usuario['id'];
         $_SESSION['usuario_nombre'] = $usuario['username'];
-        
+
         // Generar token simple (en producción usar JWT)
         $token = bin2hex(random_bytes(32));
         $_SESSION['api_token'] = $token;
-        
+
         // Respuesta exitosa
         enviarJSON([
             'success' => true,
@@ -58,18 +58,15 @@ try {
                 ]
             ]
         ], 200);
-        
     } else {
         enviarJSON([
             'error' => 'Credenciales inválidas',
             'mensaje' => 'Usuario o contraseña incorrectos'
         ], 401);
     }
-    
 } catch (Exception $e) {
     enviarJSON([
         'error' => 'Error del servidor',
         'mensaje' => 'Ocurrió un error al procesar la solicitud'
     ], 500);
 }
-?>

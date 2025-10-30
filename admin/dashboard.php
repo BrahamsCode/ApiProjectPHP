@@ -1,5 +1,5 @@
 <?php
-require_once '../config.php';
+require_once __DIR__ . '/../config.php';
 requerirAuth();
 
 $conn = getConnection();
@@ -18,6 +18,7 @@ $bajoStock = $conn->query("SELECT * FROM productos WHERE stock < 10 ORDER BY sto
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,12 +29,12 @@ $bajoStock = $conn->query("SELECT * FROM productos WHERE stock < 10 ORDER BY sto
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f6fa;
         }
-        
+
         .navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -41,18 +42,18 @@ $bajoStock = $conn->query("SELECT * FROM productos WHERE stock < 10 ORDER BY sto
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .navbar h1 {
             font-size: 24px;
         }
-        
+
         .navbar-menu {
             display: flex;
             gap: 20px;
         }
-        
+
         .navbar-menu a {
             color: white;
             text-decoration: none;
@@ -60,92 +61,103 @@ $bajoStock = $conn->query("SELECT * FROM productos WHERE stock < 10 ORDER BY sto
             border-radius: 5px;
             transition: background 0.3s;
         }
-        
+
         .navbar-menu a:hover {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 30px 20px;
         }
-        
+
         .welcome {
             margin-bottom: 30px;
         }
-        
+
         .welcome h2 {
             color: #333;
             font-size: 32px;
             margin-bottom: 10px;
         }
-        
+
         .welcome p {
             color: #666;
         }
-        
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
-        
+
         .stat-card {
             background: white;
             padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
         }
-        
+
         .stat-card:hover {
             transform: translateY(-5px);
         }
-        
+
         .stat-card h3 {
             color: #666;
             font-size: 14px;
             margin-bottom: 10px;
             text-transform: uppercase;
         }
-        
+
         .stat-card .value {
             font-size: 36px;
             font-weight: bold;
             color: #333;
         }
-        
-        .stat-card.blue .value { color: #667eea; }
-        .stat-card.green .value { color: #28a745; }
-        .stat-card.orange .value { color: #ff9800; }
-        .stat-card.purple .value { color: #764ba2; }
-        
+
+        .stat-card.blue .value {
+            color: #667eea;
+        }
+
+        .stat-card.green .value {
+            color: #28a745;
+        }
+
+        .stat-card.orange .value {
+            color: #ff9800;
+        }
+
+        .stat-card.purple .value {
+            color: #764ba2;
+        }
+
         .content-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 20px;
         }
-        
+
         .card {
             background: white;
             padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .card h3 {
             color: #333;
             margin-bottom: 20px;
             font-size: 20px;
         }
-        
+
         .table {
             width: 100%;
             border-collapse: collapse;
         }
-        
+
         .table th {
             background: #f8f9fa;
             padding: 12px;
@@ -154,45 +166,46 @@ $bajoStock = $conn->query("SELECT * FROM productos WHERE stock < 10 ORDER BY sto
             color: #666;
             font-size: 14px;
         }
-        
+
         .table td {
             padding: 12px;
             border-bottom: 1px solid #eee;
             font-size: 14px;
         }
-        
+
         .table tr:last-child td {
             border-bottom: none;
         }
-        
+
         .badge {
             padding: 4px 10px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
         }
-        
+
         .badge.pendiente {
             background: #fff3cd;
             color: #856404;
         }
-        
+
         .badge.completado {
             background: #d4edda;
             color: #155724;
         }
-        
+
         .badge.cancelado {
             background: #f8d7da;
             color: #721c24;
         }
-        
+
         .badge.warning {
             background: #ffebee;
             color: #c62828;
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
         <h1>🛍️ Panel Administrativo</h1>
@@ -205,35 +218,35 @@ $bajoStock = $conn->query("SELECT * FROM productos WHERE stock < 10 ORDER BY sto
             <a href="logout.php">Cerrar Sesión</a>
         </div>
     </nav>
-    
+
     <div class="container">
         <div class="welcome">
             <h2>¡Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario_nombre']); ?>!</h2>
             <p>Resumen de tu tienda</p>
         </div>
-        
+
         <div class="stats-grid">
             <div class="stat-card blue">
                 <h3>Total Productos</h3>
                 <div class="value"><?php echo $totalProductos; ?></div>
             </div>
-            
+
             <div class="stat-card green">
                 <h3>Total Pedidos</h3>
                 <div class="value"><?php echo $totalPedidos; ?></div>
             </div>
-            
+
             <div class="stat-card orange">
                 <h3>Pedidos Pendientes</h3>
                 <div class="value"><?php echo $pedidosPendientes; ?></div>
             </div>
-            
+
             <div class="stat-card purple">
                 <h3>Ventas Totales</h3>
                 <div class="value">$<?php echo number_format($ventasTotal, 2); ?></div>
             </div>
         </div>
-        
+
         <div class="content-grid">
             <div class="card">
                 <h3>Últimos Pedidos</h3>
@@ -262,7 +275,7 @@ $bajoStock = $conn->query("SELECT * FROM productos WHERE stock < 10 ORDER BY sto
                     <p style="color: #666;">No hay pedidos aún</p>
                 <?php endif; ?>
             </div>
-            
+
             <div class="card">
                 <h3>Productos con Bajo Stock</h3>
                 <?php if (count($bajoStock) > 0): ?>
@@ -297,4 +310,5 @@ $bajoStock = $conn->query("SELECT * FROM productos WHERE stock < 10 ORDER BY sto
         </div>
     </div>
 </body>
+
 </html>
