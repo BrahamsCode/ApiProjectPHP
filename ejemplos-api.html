@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejemplos API - Tienda</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .ejemplo {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .resultado {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Ejemplos de Uso de la API</h1>
+    <p>Prueba estos ejemplos para interactuar con la API de tu tienda</p>
+
+    <!-- ========== PRODUCTOS ========== -->
+    
+    <div class="ejemplo">
+        <h2>📦 1. Obtener Todos los Productos</h2>
+        <p><strong>Método:</strong> GET</p>
+        <button onclick="obtenerProductos()">Probar</button>
+        <div id="resultado1" class="resultado"></div>
+        
+        <h3>Código JavaScript:</h3>
+        <pre>
+fetch('api/productos.php')
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+        </pre>
+        
+        <h3>Código cURL:</h3>
+        <pre>
+curl http://localhost/tienda/api/productos.php
+        </pre>
+    </div>
+
+    <div class="ejemplo">
+        <h2>📦 2. Obtener Un Producto Específico</h2>
+        <p><strong>Método:</strong> GET</p>
+        <input type="number" id="productoId" placeholder="ID del producto" value="1">
+        <button onclick="obtenerProducto()">Probar</button>
+        <div id="resultado2" class="resultado"></div>
+        
+        <h3>Código JavaScript:</h3>
+        <pre>
+const id = 1;
+fetch(`api/productos.php?id=${id}`)
+    .then(res => res.json())
+    .then(data => console.log(data));
+        </pre>
+        
+        <h3>Código cURL:</h3>
+        <pre>
+curl http://localhost/tienda/api/productos.php?id=1
+        </pre>
+    </div>
+
+    <div class="ejemplo">
+        <h2>📦 3. Crear Nuevo Producto</h2>
+        <p><strong>Método:</strong> POST</p>
+        <button onclick="crearProducto()">Probar (Crear Producto de Prueba)</button>
+        <div id="resultado3" class="resultado"></div>
+        
+        <h3>Código JavaScript:</h3>
+        <pre>
+const nuevoProducto = {
+    nombre: "Producto Nuevo",
+    descripcion: "Descripción del producto",
+    precio: 99.99,
+    stock: 50,
+    imagen: "producto.jpg",
+    activo: 1
+};
+
+fetch('api/productos.php', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(nuevoProducto)
+})
+.then(res => res.json())
+.then(data => console.log(data));
+        </pre>
+        
+        <h3>Código cURL:</h3>
+        <pre>
+curl -X POST http://localhost/tienda/api/productos.php \
+-H "Content-Type: application/json" \
+-d '{
+    "nombre": "Producto Nuevo",
+    "descripcion": "Descripción del producto",
+    "precio": 99.99,
+    "stock": 50,
+    "imagen": "producto.jpg",
+    "activo": 1
+}'
+        </pre>
+    </div>
+
+    <div class="ejemplo">
+        <h2>📦 4. Actualizar Producto</h2>
+        <p><strong>Método:</strong> PUT</p>
+        <input type="number" id="productoIdUpdate" placeholder="ID del producto" value="1">
+        <button onclick="actualizarProducto()">Probar</button>
+        <div id="resultado4" class="resultado"></div>
+        
+        <h3>Código JavaScript:</h3>
+        <pre>
+const id = 1;
+const productoActualizado = {
+    nombre: "Producto Actualizado",
+    descripcion: "Nueva descripción",
+    precio: 89.99,
+    stock: 45,
+    imagen: "producto.jpg",
+    activo: 1
+};
+
+fetch(`api/productos.php?id=${id}`, {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(productoActualizado)
+})
+.then(res => res.json())
+.then(data => console.log(data));
+        </pre>
+        
+        <h3>Código cURL:</h3>
+        <pre>
+curl -X PUT http://localhost/tienda/api/productos.php?id=1 \
+-H "Content-Type: application/json" \
+-d '{
+    "nombre": "Producto Actualizado",
+    "descripcion": "Nueva descripción",
+    "precio": 89.99,
+    "stock": 45,
+    "imagen": "producto.jpg",
+    "activo": 1
+}'
+        </pre>
+    </div>
+
+    <div class="ejemplo">
+        <h2>📦 5. Eliminar Producto</h2>
+        <p><strong>Método:</strong> DELETE</p>
+        <p style="color: red;"><strong>⚠️ Cuidado:</strong> Esto eliminará el producto permanentemente</p>
+        <input type="number" id="productoIdDelete" placeholder="ID del producto">
+        <button onclick="eliminarProducto()" style="background: #dc3545;">Eliminar</button>
+        <div id="resultado5" class="resultado"></div>
+        
+        <h3>Código JavaScript:</h3>
+        <pre>
+const id = 1;
+fetch(`api/productos.php?id=${id}`, {
+    method: 'DELETE'
+})
+.then(res => res.json())
+.then(data => console.log(data));
+        </pre>
+        
+        <h3>Código cURL:</h3>
+        <pre>
+curl -X DELETE http://localhost/tienda/api/productos.php?id=1
+        </pre>
+    </div>
+
+    <!-- ========== PEDIDOS ========== -->
+
+    <div class="ejemplo">
+        <h2>📋 6. Obtener Todos los Pedidos</h2>
+        <p><strong>Método:</strong> GET</p>
+        <button onclick="obtenerPedidos()">Probar</button>
+        <div id="resultado6" class="resultado"></div>
+        
+        <h3>Código JavaScript:</h3>
+        <pre>
+fetch('api/pedidos.php')
+    .then(res => res.json())
+    .then(data => console.log(data));
+        </pre>
+    </div>
+
+    <div class="ejemplo">
+        <h2>📋 7. Obtener Un Pedido Específico</h2>
+        <p><strong>Método:</strong> GET</p>
+        <input type="number" id="pedidoId" placeholder="ID del pedido" value="1">
+        <button onclick="obtenerPedido()">Probar</button>
+        <div id="resultado7" class="resultado"></div>
+        
+        <h3>Código JavaScript:</h3>
+        <pre>
+const id = 1;
+fetch(`api/pedidos.php?id=${id}`)
+    .then(res => res.json())
+    .then(data => console.log(data));
+        </pre>
+    </div>
+
+    <div class="ejemplo">
+        <h2>📋 8. Crear Nuevo Pedido</h2>
+        <p><strong>Método:</strong> POST</p>
+        <button onclick="crearPedido()">Probar (Crear Pedido de Prueba)</button>
+        <div id="resultado8" class="resultado"></div>
+        
+        <h3>Código JavaScript:</h3>
+        <pre>
+const nuevoPedido = {
+    cliente_nombre: "Juan Pérez",
+    cliente_email: "juan@email.com",
+    total: 199.98,
+    items: [
+        {
+            producto_id: 1,
+            cantidad: 2,
+            precio: 99.99
+        }
+    ]
+};
+
+fetch('api/pedidos.php', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(nuevoPedido)
+})
+.then(res => res.json())
+.then(data => console.log(data));
+        </pre>
+    </div>
+
+    <div class="ejemplo">
+        <h2>📋 9. Actualizar Estado del Pedido</h2>
+        <p><strong>Método:</strong> PUT</p>
+        <input type="number" id="pedidoIdUpdate" placeholder="ID del pedido" value="1">
+        <select id="estadoPedido">
+            <option value="pendiente">Pendiente</option>
+            <option value="completado">Completado</option>
+            <option value="cancelado">Cancelado</option>
+        </select>
+        <button onclick="actualizarPedido()">Actualizar Estado</button>
+        <div id="resultado9" class="resultado"></div>
+        
+        <h3>Código JavaScript:</h3>
+        <pre>
+const id = 1;
+const nuevoEstado = {
+    estado: "completado"
+};
+
+fetch(`api/pedidos.php?id=${id}`, {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(nuevoEstado)
+})
+.then(res => res.json())
+.then(data => console.log(data));
+        </pre>
+    </div>
+
+    <script>
+        // Funciones para probar la API
+        
+        function mostrarResultado(id, data) {
+            const resultado = document.getElementById(id);
+            resultado.style.display = 'block';
+            resultado.innerHTML = '<strong>Respuesta:</strong><br>' + JSON.stringify(data, null, 2);
+        }
+
+        function obtenerProductos() {
+            fetch('api/productos.php')
+                .then(res => res.json())
+                .then(data => mostrarResultado('resultado1', data))
+                .catch(error => mostrarResultado('resultado1', {error: error.message}));
+        }
+
+        function obtenerProducto() {
+            const id = document.getElementById('productoId').value;
+            fetch(`api/productos.php?id=${id}`)
+                .then(res => res.json())
+                .then(data => mostrarResultado('resultado2', data))
+                .catch(error => mostrarResultado('resultado2', {error: error.message}));
+        }
+
+        function crearProducto() {
+            const nuevoProducto = {
+                nombre: "Producto de Prueba " + Date.now(),
+                descripcion: "Este es un producto de prueba creado desde el ejemplo",
+                precio: 99.99,
+                stock: 50,
+                imagen: "prueba.jpg",
+                activo: 1
+            };
+
+            fetch('api/productos.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(nuevoProducto)
+            })
+            .then(res => res.json())
+            .then(data => mostrarResultado('resultado3', data))
+            .catch(error => mostrarResultado('resultado3', {error: error.message}));
+        }
+
+        function actualizarProducto() {
+            const id = document.getElementById('productoIdUpdate').value;
+            const productoActualizado = {
+                nombre: "Producto Actualizado " + Date.now(),
+                descripcion: "Descripción actualizada",
+                precio: 89.99,
+                stock: 45,
+                imagen: "actualizado.jpg",
+                activo: 1
+            };
+
+            fetch(`api/productos.php?id=${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productoActualizado)
+            })
+            .then(res => res.json())
+            .then(data => mostrarResultado('resultado4', data))
+            .catch(error => mostrarResultado('resultado4', {error: error.message}));
+        }
+
+        function eliminarProducto() {
+            const id = document.getElementById('productoIdDelete').value;
+            if (!id) {
+                alert('Por favor ingresa un ID');
+                return;
+            }
+            
+            if (confirm('¿Estás seguro de eliminar este producto?')) {
+                fetch(`api/productos.php?id=${id}`, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(data => mostrarResultado('resultado5', data))
+                .catch(error => mostrarResultado('resultado5', {error: error.message}));
+            }
+        }
+
+        function obtenerPedidos() {
+            fetch('api/pedidos.php')
+                .then(res => res.json())
+                .then(data => mostrarResultado('resultado6', data))
+                .catch(error => mostrarResultado('resultado6', {error: error.message}));
+        }
+
+        function obtenerPedido() {
+            const id = document.getElementById('pedidoId').value;
+            fetch(`api/pedidos.php?id=${id}`)
+                .then(res => res.json())
+                .then(data => mostrarResultado('resultado7', data))
+                .catch(error => mostrarResultado('resultado7', {error: error.message}));
+        }
+
+        function crearPedido() {
+            const nuevoPedido = {
+                cliente_nombre: "Cliente Prueba",
+                cliente_email: "cliente@prueba.com",
+                total: 199.98,
+                items: [
+                    {
+                        producto_id: 1,
+                        cantidad: 2,
+                        precio: 99.99
+                    }
+                ]
+            };
+
+            fetch('api/pedidos.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(nuevoPedido)
+            })
+            .then(res => res.json())
+            .then(data => mostrarResultado('resultado8', data))
+            .catch(error => mostrarResultado('resultado8', {error: error.message}));
+        }
+
+        function actualizarPedido() {
+            const id = document.getElementById('pedidoIdUpdate').value;
+            const estado = document.getElementById('estadoPedido').value;
+            
+            fetch(`api/pedidos.php?id=${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({estado: estado})
+            })
+            .then(res => res.json())
+            .then(data => mostrarResultado('resultado9', data))
+            .catch(error => mostrarResultado('resultado9', {error: error.message}));
+        }
+    </script>
+</body>
+</html>
