@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo API - Tienda</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .resultado {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        input, select {
+            padding: 8px;
+            margin: 5px;
+            border: 2px solid #e1e8ed;
+            border-radius: 5px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .card h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Demo de API - Sistema de Tienda</h1>
+        
+        <!-- LOGIN -->
+        <div class="section">
+            <h2>🔐 1. API de Login</h2>
+            <p><strong>Endpoint:</strong> POST /api/login.php</p>
+            <div>
+                <input type="text" id="loginUser" placeholder="Usuario" value="admin">
+                <input type="password" id="loginPass" placeholder="Contraseña" value="admin123">
+                <button class="btn" onclick="testLogin()">Probar Login</button>
+            </div>
+            <div id="resultLogin" class="resultado" style="display: none;"></div>
+        </div>
+        
+        <!-- CATEGORÍAS -->
+        <div class="section">
+            <h2>📂 2. API de Categorías</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>GET - Todas las categorías</h3>
+                    <button class="btn" onclick="getCategorias()">Obtener Categorías</button>
+                </div>
+                
+                <div class="card">
+                    <h3>GET - Una categoría</h3>
+                    <input type="number" id="catId" placeholder="ID" value="1">
+                    <button class="btn" onclick="getCategoria()">Obtener</button>
+                </div>
+                
+                <div class="card">
+                    <h3>POST - Crear categoría</h3>
+                    <input type="text" id="catNombre" placeholder="Nombre" value="Nueva Categoría">
+                    <button class="btn btn-success" onclick="createCategoria()">Crear</button>
+                </div>
+                
+                <div class="card">
+                    <h3>PUT - Actualizar</h3>
+                    <input type="number" id="catIdUpdate" placeholder="ID" value="1">
+                    <input type="text" id="catNombreUpdate" placeholder="Nuevo nombre">
+                    <button class="btn" onclick="updateCategoria()">Actualizar</button>
+                </div>
+            </div>
+            
+            <div id="resultCategorias" class="resultado" style="display: none;"></div>
+        </div>
+        
+        <!-- PRODUCTOS -->
+        <div class="section">
+            <h2>📦 3. API de Productos</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>GET - Todos los productos</h3>
+                    <button class="btn" onclick="getProductos()">Obtener Todos</button>
+                    <button class="btn" onclick="getProductosActivos()">Solo Activos</button>
+                </div>
+                
+                <div class="card">
+                    <h3>GET - Por categoría</h3>
+                    <input type="number" id="prodCatId" placeholder="ID Categoría" value="1">
+                    <button class="btn" onclick="getProductosPorCategoria()">Obtener</button>
+                </div>
+                
+                <div class="card">
+                    <h3>GET - Un producto</h3>
+                    <input type="number" id="prodId" placeholder="ID Producto" value="1">
+                    <button class="btn" onclick="getProducto()">Obtener</button>
+                </div>
+                
+                <div class="card">
+                    <h3>POST - Crear producto</h3>
+                    <input type="text" id="prodNombre" placeholder="Nombre" value="Producto Nuevo">
+                    <input type="number" id="prodPrecio" placeholder="Precio" value="99.99">
+                    <input type="number" id="prodStock" placeholder="Stock" value="50">
+                    <button class="btn btn-success" onclick="createProducto()">Crear</button>
+                </div>
+            </div>
+            
+            <div id="resultProductos" class="resultado" style="display: none;"></div>
+        </div>
+        
+        <!-- PEDIDOS -->
+        <div class="section">
+            <h2>📋 4. API de Pedidos</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>GET - Todos los pedidos</h3>
+                    <button class="btn" onclick="getPedidos()">Obtener Pedidos</button>
+                </div>
+                
+                <div class="card">
+                    <h3>GET - Un pedido</h3>
+                    <input type="number" id="pedidoId" placeholder="ID" value="1">
+                    <button class="btn" onclick="getPedido()">Obtener</button>
+                </div>
+                
+                <div class="card">
+                    <h3>POST - Crear pedido</h3>
+                    <button class="btn btn-success" onclick="createPedido()">Crear Pedido de Prueba</button>
+                </div>
+                
+                <div class="card">
+                    <h3>PUT - Cambiar estado</h3>
+                    <input type="number" id="pedidoIdUpdate" placeholder="ID" value="1">
+                    <select id="pedidoEstado">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="completado">Completado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                    <button class="btn" onclick="updatePedido()">Actualizar</button>
+                </div>
+            </div>
+            
+            <div id="resultPedidos" class="resultado" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'api/';
+        
+        // Función auxiliar para mostrar resultados
+        function mostrar(elementId, data, isError = false) {
+            const el = document.getElementById(elementId);
+            el.style.display = 'block';
+            el.innerHTML = JSON.stringify(data, null, 2);
+            el.className = 'resultado ' + (isError ? 'error' : 'success');
+        }
+        
+        // Función auxiliar para hacer peticiones
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            try {
+                const response = await fetch(API_BASE + endpoint, options);
+                return await response.json();
+            } catch (error) {
+                return { error: 'Error de conexión', mensaje: error.message };
+            }
+        }
+        
+        // ========== LOGIN ==========
+        async function testLogin() {
+            const data = {
+                username: document.getElementById('loginUser').value,
+                password: document.getElementById('loginPass').value
+            };
+            
+            const result = await apiCall('login.php', 'POST', data);
+            mostrar('resultLogin', result, !!result.error);
+        }
+        
+        // ========== CATEGORÍAS ==========
+        async function getCategorias() {
+            const result = await apiCall('categorias.php');
+            mostrar('resultCategorias', result);
+        }
+        
+        async function getCategoria() {
+            const id = document.getElementById('catId').value;
+            const result = await apiCall(`categorias.php?id=${id}`);
+            mostrar('resultCategorias', result);
+        }
+        
+        async function createCategoria() {
+            const data = {
+                nombre: document.getElementById('catNombre').value,
+                descripcion: 'Categoría creada desde la demo',
+                activo: 1
+            };
+            
+            const result = await apiCall('categorias.php', 'POST', data);
+            mostrar('resultCategorias', result);
+        }
+        
+        async function updateCategoria() {
+            const id = document.getElementById('catIdUpdate').value;
+            const data = {
+                nombre: document.getElementById('catNombreUpdate').value || 'Categoría Actualizada',
+                descripcion: 'Actualizado desde la demo',
+                activo: 1
+            };
+            
+            const result = await apiCall(`categorias.php?id=${id}`, 'PUT', data);
+            mostrar('resultCategorias', result);
+        }
+        
+        // ========== PRODUCTOS ==========
+        async function getProductos() {
+            const result = await apiCall('productos.php');
+            mostrar('resultProductos', result);
+        }
+        
+        async function getProductosActivos() {
+            const result = await apiCall('productos.php?activo=1');
+            mostrar('resultProductos', result);
+        }
+        
+        async function getProductosPorCategoria() {
+            const catId = document.getElementById('prodCatId').value;
+            const result = await apiCall(`productos.php?categoria_id=${catId}`);
+            mostrar('resultProductos', result);
+        }
+        
+        async function getProducto() {
+            const id = document.getElementById('prodId').value;
+            const result = await apiCall(`productos.php?id=${id}`);
+            mostrar('resultProductos', result);
+        }
+        
+        async function createProducto() {
+            const data = {
+                nombre: document.getElementById('prodNombre').value,
+                descripcion: 'Producto creado desde la demo',
+                precio: parseFloat(document.getElementById('prodPrecio').value),
+                stock: parseInt(document.getElementById('prodStock').value),
+                categoria_id: 1,
+                activo: 1
+            };
+            
+            const result = await apiCall('productos.php', 'POST', data);
+            mostrar('resultProductos', result);
+        }
+        
+        // ========== PEDIDOS ==========
+        async function getPedidos() {
+            const result = await apiCall('pedidos.php');
+            mostrar('resultPedidos', result);
+        }
+        
+        async function getPedido() {
+            const id = document.getElementById('pedidoId').value;
+            const result = await apiCall(`pedidos.php?id=${id}`);
+            mostrar('resultPedidos', result);
+        }
+        
+        async function createPedido() {
+            const data = {
+                cliente_nombre: 'Cliente Demo',
+                cliente_email: 'demo@ejemplo.com',
+                total: 199.98,
+                items: [
+                    {
+                        producto_id: 1,
+                        cantidad: 2,
+                        precio: 99.99
+                    }
+                ]
+            };
+            
+            const result = await apiCall('pedidos.php', 'POST', data);
+            mostrar('resultPedidos', result);
+        }
+        
+        async function updatePedido() {
+            const id = document.getElementById('pedidoIdUpdate').value;
+            const estado = document.getElementById('pedidoEstado').value;
+            
+            const data = { estado: estado };
+            const result = await apiCall(`pedidos.php?id=${id}`, 'PUT', data);
+            mostrar('resultPedidos', result);
+        }
+    </script>
+</body>
+</html>

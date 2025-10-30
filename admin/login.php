@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once '../config.php';
 iniciarSesion();
 
 // Si ya está autenticado, redirigir al dashboard
@@ -15,18 +15,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     
     if ($username && $password) {
-        $conn = getConnection();
-        $stmt = $conn->prepare("SELECT * FROM usuarios WHERE username = ?");
-        $stmt->execute([$username]);
-        $usuario = $stmt->fetch();
+        // Usar la API de login
+        $data = [
+            'username' => $username,
+            'password' => $password
+        ];
         
-        if ($usuario && password_verify($password, $usuario['password'])) {
-            $_SESSION['usuario_id'] = $usuario['id'];
-            $_SESSION['usuario_nombre'] = $usuario['username'];
-            header('Location: dashboard.php');
-            exit();
+        $options = [
+            'http' => [
+                'header'  => "Content-type: application/json\r\n",
+                'method'  => 'POST',
+                'content' => json_encode($data)
+            ]
+        ];
+        
+        $context  = stream_context_create($options);
+        $result = @file_get_contents('http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . '/../api/login.php', false, $context);
+        
+        if ($result !== false) {
+            $response = json_decode($result, true);
+            
+            if (isset($response['success']) && $response['success']) {
+                // Login exitoso - la sesión ya fue creada por la API
+                header('Location: dashboard.php');
+                exit();
+            } else {
+                $error = $response['mensaje'] ?? 'Error de autenticación';
+            }
         } else {
-            $error = 'Usuario o contraseña incorrectos';
+            $error = 'Error al conectar con el servidor';
         }
     } else {
         $error = 'Por favor complete todos los campos';

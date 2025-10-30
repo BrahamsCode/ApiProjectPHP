@@ -5,17 +5,21 @@ Sistema completo de gestión de tienda con panel administrativo, API REST y fron
 ## 🚀 Características
 
 ### Panel Administrativo
-- ✅ Sistema de autenticación (login/logout)
+- ✅ Sistema de autenticación basado en API (login/logout)
 - 📊 Dashboard con estadísticas
 - 📦 Gestión completa de productos (CRUD)
+- 📂 Gestión completa de categorías (CRUD)
 - 📋 Gestión de pedidos
 - 🔔 Alertas de bajo stock
 
 ### API REST
+- 🔐 API de login con tokens de sesión
 - 🌐 API para productos (GET, POST, PUT, DELETE)
+- 📂 API para categorías (GET, POST, PUT, DELETE)
 - 🌐 API para pedidos (GET, POST, PUT)
 - 📡 Endpoints RESTful
 - 🔒 Headers CORS configurados
+- 🔗 Relaciones entre productos y categorías
 
 ### Frontend Tienda
 - 🛒 Carrito de compras
@@ -104,6 +108,60 @@ echo password_hash('tu_contraseña', PASSWORD_DEFAULT);
 ```
 
 ## 📖 Uso de la API
+
+### Login
+
+**Autenticación:**
+```http
+POST /api/login.php
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
+
+### Categorías
+
+**Obtener todas las categorías:**
+```http
+GET /api/categorias.php
+```
+
+**Obtener una categoría:**
+```http
+GET /api/categorias.php?id=1
+```
+
+**Crear categoría:**
+```http
+POST /api/categorias.php
+Content-Type: application/json
+
+{
+  "nombre": "Nueva Categoría",
+  "descripcion": "Descripción",
+  "activo": 1
+}
+```
+
+**Actualizar categoría:**
+```http
+PUT /api/categorias.php?id=1
+Content-Type: application/json
+
+{
+  "nombre": "Categoría Actualizada",
+  "descripcion": "Nueva descripción",
+  "activo": 1
+}
+```
+
+**Eliminar categoría:**
+```http
+DELETE /api/categorias.php?id=1
+```
 
 ### Productos
 

@@ -335,6 +335,11 @@
             <p>Los mejores productos al mejor precio</p>
         </div>
         
+        <div style="margin-bottom: 30px; text-align: center;">
+            <button class="btn" onclick="filtrarCategoria(null)" style="background: #333;">Todas</button>
+            <span id="categoriasBotones"></span>
+        </div>
+        
         <div id="loading" class="loading">Cargando productos...</div>
         <div class="products-grid" id="productsGrid"></div>
     </div>
@@ -392,16 +397,53 @@
     <script>
         const API_PRODUCTOS = 'api/productos.php';
         const API_PEDIDOS = 'api/pedidos.php';
+        const API_CATEGORIAS = 'api/categorias.php';
         
         let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
         let productos = [];
+        let categorias = [];
+        let categoriaActual = null;
         
-        // Cargar productos
+        // Cargar categorías y productos
+        cargarCategorias();
         cargarProductos();
         actualizarContadorCarrito();
         
+        function cargarCategorias() {
+            fetch(API_CATEGORIAS + '?activo=1')
+                .then(res => res.json())
+                .then(data => {
+                    categorias = data;
+                    mostrarBotonesCategorias(data);
+                })
+                .catch(error => console.error('Error al cargar categorías:', error));
+        }
+        
+        function mostrarBotonesCategorias(categorias) {
+            const container = document.getElementById('categoriasBotones');
+            container.innerHTML = '';
+            
+            categorias.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.textContent = cat.nombre;
+                btn.onclick = () => filtrarCategoria(cat.id);
+                container.appendChild(btn);
+            });
+        }
+        
+        function filtrarCategoria(id) {
+            categoriaActual = id;
+            cargarProductos();
+        }
+        
         function cargarProductos() {
-            fetch(API_PRODUCTOS + '?activo=1')
+            let url = API_PRODUCTOS + '?activo=1';
+            if (categoriaActual) {
+                url += '&categoria_id=' + categoriaActual;
+            }
+            
+            fetch(url)
                 .then(res => res.json())
                 .then(data => {
                     productos = data;

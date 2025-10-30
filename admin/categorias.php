@@ -7,7 +7,7 @@ requerirAuth();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos - Panel Administrativo</title>
+    <title>Categorías - Panel Administrativo</title>
     <style>
         * {
             margin: 0;
@@ -240,36 +240,36 @@ requerirAuth();
     
     <div class="container">
         <div class="header">
-            <h2>Gestión de Productos</h2>
-            <button class="btn btn-primary" onclick="abrirModal()">+ Nuevo Producto</button>
+            <h2>Gestión de Categorías</h2>
+            <button class="btn btn-primary" onclick="abrirModal()">+ Nueva Categoría</button>
         </div>
         
         <div class="card">
-            <div id="loading" class="loading">Cargando productos...</div>
-            <table class="table" id="tablaProductos" style="display: none;">
+            <div id="loading" class="loading">Cargando categorías...</div>
+            <table class="table" id="tablaCategorias" style="display: none;">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Precio</th>
-                        <th>Stock</th>
+                        <th>Descripción</th>
+                        <th>Productos</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="productosBody"></tbody>
+                <tbody id="categoriasBody"></tbody>
             </table>
         </div>
     </div>
     
-    <!-- Modal para crear/editar producto -->
-    <div id="modalProducto" class="modal">
+    <!-- Modal para crear/editar categoría -->
+    <div id="modalCategoria" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTitulo">Nuevo Producto</h3>
+                <h3 id="modalTitulo">Nueva Categoría</h3>
             </div>
-            <form id="formProducto">
-                <input type="hidden" id="productoId">
+            <form id="formCategoria">
+                <input type="hidden" id="categoriaId">
                 
                 <div class="form-group">
                     <label>Nombre *</label>
@@ -279,28 +279,6 @@ requerirAuth();
                 <div class="form-group">
                     <label>Descripción</label>
                     <textarea id="descripcion"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Precio *</label>
-                    <input type="number" id="precio" step="0.01" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Stock *</label>
-                    <input type="number" id="stock" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Categoría</label>
-                    <select id="categoria_id">
-                        <option value="">Sin categoría</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Imagen (URL)</label>
-                    <input type="text" id="imagen">
                 </div>
                 
                 <div class="form-group">
@@ -320,61 +298,36 @@ requerirAuth();
     </div>
     
     <script>
-        const API_URL = '../api/productos.php';
-        const API_CATEGORIAS = '../api/categorias.php';
+        const API_URL = '../api/categorias.php';
         let editandoId = null;
-        let categorias = [];
         
-        // Cargar productos y categorías al iniciar
+        // Cargar categorías al iniciar
         cargarCategorias();
-        cargarProductos();
         
         function cargarCategorias() {
-            fetch(API_CATEGORIAS)
-                .then(res => res.json())
-                .then(data => {
-                    categorias = data;
-                    llenarSelectCategorias();
-                })
-                .catch(error => console.error('Error:', error));
-        }
-        
-        function llenarSelectCategorias() {
-            const select = document.getElementById('categoria_id');
-            select.innerHTML = '<option value="">Sin categoría</option>';
-            
-            categorias.forEach(cat => {
-                const option = document.createElement('option');
-                option.value = cat.id;
-                option.textContent = cat.nombre;
-                select.appendChild(option);
-            });
-        }
-        
-        function cargarProductos() {
             document.getElementById('loading').style.display = 'block';
-            document.getElementById('tablaProductos').style.display = 'none';
+            document.getElementById('tablaCategorias').style.display = 'none';
             
             fetch(API_URL)
                 .then(res => res.json())
-                .then(productos => {
+                .then(categorias => {
                     document.getElementById('loading').style.display = 'none';
-                    document.getElementById('tablaProductos').style.display = 'table';
+                    document.getElementById('tablaCategorias').style.display = 'table';
                     
-                    const tbody = document.getElementById('productosBody');
+                    const tbody = document.getElementById('categoriasBody');
                     tbody.innerHTML = '';
                     
-                    productos.forEach(producto => {
+                    categorias.forEach(categoria => {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>#${producto.id}</td>
-                            <td>${producto.nombre}</td>
-                            <td>$${parseFloat(producto.precio).toFixed(2)}</td>
-                            <td>${producto.stock}</td>
-                            <td><span class="badge ${producto.activo == 1 ? 'activo' : 'inactivo'}">${producto.activo == 1 ? 'Activo' : 'Inactivo'}</span></td>
+                            <td>#${categoria.id}</td>
+                            <td>${categoria.nombre}</td>
+                            <td>${categoria.descripcion || '-'}</td>
+                            <td>${categoria.total_productos}</td>
+                            <td><span class="badge ${categoria.activo == 1 ? 'activo' : 'inactivo'}">${categoria.activo == 1 ? 'Activo' : 'Inactivo'}</span></td>
                             <td>
-                                <button class="btn btn-primary btn-small" onclick="editarProducto(${producto.id})">Editar</button>
-                                <button class="btn btn-danger btn-small" onclick="eliminarProducto(${producto.id})">Eliminar</button>
+                                <button class="btn btn-primary btn-small" onclick="editarCategoria(${categoria.id})">Editar</button>
+                                <button class="btn btn-danger btn-small" onclick="eliminarCategoria(${categoria.id})" ${categoria.total_productos > 0 ? 'disabled title="No se puede eliminar (tiene productos)"' : ''}>Eliminar</button>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -382,63 +335,63 @@ requerirAuth();
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error al cargar productos');
+                    alert('Error al cargar categorías');
                 });
         }
         
         function abrirModal() {
             editandoId = null;
-            document.getElementById('modalTitulo').textContent = 'Nuevo Producto';
-            document.getElementById('formProducto').reset();
-            document.getElementById('productoId').value = '';
-            document.getElementById('modalProducto').classList.add('active');
+            document.getElementById('modalTitulo').textContent = 'Nueva Categoría';
+            document.getElementById('formCategoria').reset();
+            document.getElementById('categoriaId').value = '';
+            document.getElementById('modalCategoria').classList.add('active');
         }
         
         function cerrarModal() {
-            document.getElementById('modalProducto').classList.remove('active');
+            document.getElementById('modalCategoria').classList.remove('active');
         }
         
-        function editarProducto(id) {
+        function editarCategoria(id) {
             fetch(`${API_URL}?id=${id}`)
                 .then(res => res.json())
-                .then(producto => {
+                .then(categoria => {
                     editandoId = id;
-                    document.getElementById('modalTitulo').textContent = 'Editar Producto';
-                    document.getElementById('productoId').value = producto.id;
-                    document.getElementById('nombre').value = producto.nombre;
-                    document.getElementById('descripcion').value = producto.descripcion;
-                    document.getElementById('precio').value = producto.precio;
-                    document.getElementById('stock').value = producto.stock;
-                    document.getElementById('categoria_id').value = producto.categoria_id || '';
-                    document.getElementById('imagen').value = producto.imagen;
-                    document.getElementById('activo').value = producto.activo;
-                    document.getElementById('modalProducto').classList.add('active');
+                    document.getElementById('modalTitulo').textContent = 'Editar Categoría';
+                    document.getElementById('categoriaId').value = categoria.id;
+                    document.getElementById('nombre').value = categoria.nombre;
+                    document.getElementById('descripcion').value = categoria.descripcion;
+                    document.getElementById('activo').value = categoria.activo;
+                    document.getElementById('modalCategoria').classList.add('active');
                 });
         }
         
-        function eliminarProducto(id) {
-            if (confirm('¿Estás seguro de eliminar este producto?')) {
+        function eliminarCategoria(id) {
+            if (confirm('¿Estás seguro de eliminar esta categoría?')) {
                 fetch(`${API_URL}?id=${id}`, {
                     method: 'DELETE'
                 })
                 .then(res => res.json())
                 .then(data => {
-                    alert(data.mensaje);
-                    cargarProductos();
+                    if (data.error) {
+                        alert(data.mensaje);
+                    } else {
+                        alert(data.mensaje);
+                        cargarCategorias();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al eliminar categoría');
                 });
             }
         }
         
-        document.getElementById('formProducto').addEventListener('submit', function(e) {
+        document.getElementById('formCategoria').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const data = {
                 nombre: document.getElementById('nombre').value,
                 descripcion: document.getElementById('descripcion').value,
-                precio: document.getElementById('precio').value,
-                stock: document.getElementById('stock').value,
-                categoria_id: document.getElementById('categoria_id').value || null,
-                imagen: document.getElementById('imagen').value,
                 activo: document.getElementById('activo').value
             };
             
@@ -456,16 +409,16 @@ requerirAuth();
             .then(data => {
                 alert(data.mensaje);
                 cerrarModal();
-                cargarProductos();
+                cargarCategorias();
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al guardar producto');
+                alert('Error al guardar categoría');
             });
         });
         
         // Cerrar modal al hacer clic fuera
-        document.getElementById('modalProducto').addEventListener('click', function(e) {
+        document.getElementById('modalCategoria').addEventListener('click', function(e) {
             if (e.target === this) {
                 cerrarModal();
             }
