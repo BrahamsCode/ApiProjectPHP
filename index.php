@@ -336,7 +336,7 @@
         </div>
         
         <div style="margin-bottom: 30px; text-align: center;">
-            <button class="btn" onclick="filtrarCategoria(null)" style="background: #333;">Todas</button>
+            <button class="btn" onclick="filtrarCategoria(null)" style="background: #52a7ff;">Todas</button>
             <span id="categoriasBotones"></span>
         </div>
         
